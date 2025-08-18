@@ -2,6 +2,18 @@
 import os
 import json
 import streamlit as st
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]  # parent of "pages" folder
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+# -------------------------------------------------------------------------------
+
+# now your imports will work
+from lib.data import *   # or import the specific functions you use
+from lib.utils import *  # idem
+
 from dotenv import load_dotenv
 from openai import OpenAI
 from openai import APIConnectionError, RateLimitError, OpenAIError
