@@ -2,20 +2,6 @@
 import pandas as pd
 import streamlit as st
 
-# --- make project root importable (so "from lib..." works on Streamlit Cloud) ---
-import sys
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]  # parent of "pages" folder
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-# -------------------------------------------------------------------------------
-
-# now your imports will work
-from lib.data import *   # or import the specific functions you use
-from lib.utils import *  # idem
-
-
 from lib.data import (
     load_df, get_teams, get_players_for_team,
     kpi_row, build_game_labels, aggregate_team, goto, init_router_state, safe_cols,
