@@ -61,11 +61,14 @@ metric_if(c4, "Age", has(pdf, "Age"), first_or_none(pdf["Age"]))
 # ---------- key stats ----------
 st.markdown("### Key Stats")
 
-k1, k2, k3, k4 = st.columns(4)
-metric_if(k1, "Minutes", "Minutes" in num_sum.index, num_sum.get("Minutes"))
-metric_if(k2, "Goals", "Goals" in num_sum.index, num_sum.get("Goals"))
-metric_if(k3, "Assists", "Assists" in num_sum.index, num_sum.get("Assists"))
-metric_if(k4, "Passes Completed", "Passes Completed" in num_sum.index, num_sum.get("Passes Completed"))
+k1, k2, k3, k4, k5 = st.columns(5)
+total_minutes = num_sum.get("Minutes", 0)
+metric_if(k1, "Minutes (Total)", "Minutes" in num_sum.index, total_minutes)
+metric_if(k2, "Avg Minutes/Game", apps > 0, f"{(total_minutes / apps):.1f}")
+metric_if(k3, "Goals", "Goals" in num_sum.index, num_sum.get("Goals"))
+metric_if(k4, "Assists", "Assists" in num_sum.index, num_sum.get("Assists"))
+metric_if(k5, "Passes Completed", "Passes Completed" in num_sum.index, num_sum.get("Passes Completed"))
+
 
 k5, k6, k7 = st.columns(3)
 metric_if(k5, "Tackles", "Tackles" in num_sum.index, num_sum.get("Tackles"))
