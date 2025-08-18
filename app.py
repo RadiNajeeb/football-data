@@ -15,7 +15,7 @@ DF = load_df("database.csv")
 init_router_state()
 
 st.title("Exploring La Liga")
-st.subheader("In this website, I will provide you stata about teams and players.")
+st.subheader("This website will provide you stata about teams and players in La-Liga.")
 st.caption("Browse teams → pick a player → explore stats. Use the header tabs to switch sections.")
 
 left, right = st.columns(2)
