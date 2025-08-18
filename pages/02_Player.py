@@ -1,45 +1,41 @@
-# pages/02_Player.py
-
-# 1) Path shim so local packages import fine on Streamlit Cloud
-import sys
-from pathlib import Path
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
-# 2) Third-party libs
 import streamlit as st
 import pandas as pd
+from lib.data import load_df
 
-# 3) Explicit imports from your code (adjust to what this page actually uses)
-from lib.data import (
-    load_df, get_players_for_team, get_teams,
-    init_router_state, safe_cols, kpi_row
-)
-# from lib.utils import <add helpers this page needs>
-
-# 4) Load data
-DATA_PATH = ROOT / "database.csv"
-DF = load_df(str(DATA_PATH))
-init_router_state()
-
-# ------------------- YOUR PAGE LOGIC -------------------
 st.title("Player Explorer")
 
-teams = get_teams(DF)
-team = st.selectbox("Team", teams, index=0, key="players_team")
+# Load data
+DF = load_df("database.csv")
 
-players = get_players_for_team(DF, team)
-player = st.selectbox("Player", players, index=0, key="players_player")
+# Team and player selection
+teams = DF["team"].dropna().unique()
+team = st.selectbox("Team", teams)
+players = DF[DF["team"] == team]["player"].dropna().unique()
+player = st.selectbox("Player", players)
 
-p_df = DF[(DF["Team"] == team) & (DF["Player"] == player)].copy()
-if p_df.empty:
-    st.warning("No data for this player.")
-    st.stop()
+# Filter player data
+player_df = DF[(DF["team"] == team) & (DF["player"] == player)]
 
-kpi_row(p_df, aggregate=False)
+if not player_df.empty:
+    st.subheader(f"{player}")
 
-with st.expander("Raw data"):
-    defaults = safe_cols(p_df, ["Match","Minutes","Goals","Assists"])
-    cols = st.multiselect("Columns", list(p_df.columns), default=defaults or list(p_df.columns))
-    st.dataframe(p_df[cols] if cols else p_df, use_container_width=True)
+    # Collect stats (adjust column names as needed)
+    stats = {
+        "Match Minutes": int(player_df["minutes"].sum()),
+        "Goals": int(player_df["goals"].sum()),
+        "Assists": int(player_df["assists"].sum()),
+        "Shots": int(player_df["shots"].sum()),
+        "Passes Completed": int(player_df["passes_completed"].sum()),
+        "Tackles": int(player_df["tackles"].sum()),
+        "Yellow Cards": int(player_df["yellow_cards"].sum()),
+        "Red Cards": int(player_df["red_cards"].sum()),
+    }
+
+    # Show stats in columns
+    cols = st.columns(4)
+    for i, (stat, value) in enumerate(stats.items()):
+        with cols[i % 4]:
+            st.metric(stat, value)
+
+    with st.expander("Raw data"):
+        st.dataframe(player_df)
