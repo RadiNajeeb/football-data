@@ -1,0 +1,25 @@
+import re
+import pandas as pd
+
+NUMERIC_CANDIDATES = [
+    "Age","Minutes","Goals","Assists","Shots","xG","xA",
+    "Goals/90","Assists/90","Shots/90","xG/90","xA/90"
+]
+
+def _coerce_numeric(s: pd.Series) -> pd.Series:
+    # Extract first numeric token (handles "25-159", " 30 yrs", "12.5", etc.)
+    extracted = s.astype(str).str.extract(r'(-?\d+(?:\.\d+)?)', expand=False)
+    return pd.to_numeric(extracted, errors="coerce")
+
+@st.cache_data
+def load_df(path: str) -> pd.DataFrame:
+    df = pd.read_csv(path)
+    df.columns = df.columns.str.strip()
+    rename_map = {"Club":"Team","Squad":"Team","Name":"Player","player":"Player","Pos":"Position"}
+    df = df.rename(columns={k:v for k,v in rename_map.items() if k in df.columns})
+
+    for col in NUMERIC_CANDIDATES:
+        if col in df.columns:
+            df[col] = _coerce_numeric(df[col])
+
+    return df
