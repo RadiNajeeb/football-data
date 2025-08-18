@@ -7,8 +7,6 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from openai import APIConnectionError, RateLimitError, OpenAIError
 
-from lib.agent_tools import perform_action  # single executor
-
 st.set_page_config(page_title="Football Assistant — Chat", page_icon="⚽", layout="wide")
 st.title("Football Assistant — Chat")
 

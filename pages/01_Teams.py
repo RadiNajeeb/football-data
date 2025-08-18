@@ -2,12 +2,6 @@
 import pandas as pd
 import streamlit as st
 
-from lib.data import (
-    load_df, get_teams, get_players_for_team,
-    kpi_row, build_game_labels, aggregate_team, goto, init_router_state, safe_cols,
-    team_profile_kpis
-)
-
 DF = load_df("database.csv")
 init_router_state()
 

@@ -2,8 +2,6 @@
 import streamlit as st
 import pandas as pd
 
-from lib.data import load_df, get_teams, get_players_for_team, build_game_labels
-
 st.set_page_config(layout="wide")  # make the page full width
 
 DF = load_df("database.csv")
