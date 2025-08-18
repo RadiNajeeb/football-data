@@ -1,40 +1,23 @@
 # pages/01_Teams.py
-
-# 1) Make project root importable when running from pages/
-import sys
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]   # parent folder of "pages"
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
-# 2) Third-party libs
-import streamlit as st
 import pandas as pd
-
-# 3) Explicit imports from your local package(s)
+import streamlit as st
 from lib.data import (
     load_df, get_teams, get_players_for_team,
     kpi_row, build_game_labels, aggregate_team, goto, init_router_state, safe_cols,
     team_profile_kpis
 )
-# from lib.utils import <add any helpers you actually use>
 
-# 4) Data load (absolute path so it works on Streamlit Cloud)
-DATA_PATH = ROOT / "database.csv"
-DF = load_df(str(DATA_PATH))
-
-# 5) Any state/router init
+# ---------- boot ----------
+DF = load_df("database.csv")
 init_router_state()
-
-# ------------------- YOUR PAGE LOGIC -------------------
 
 st.title("Teams in La Liga")
 
+# ---------- selectors ----------
 teams = get_teams(DF)
 team = st.selectbox(
     "Team", teams,
-    index=(teams.index(st.session_state.team) if getattr(st.session_state, "team", None) in teams else 0),
+    index=(teams.index(st.session_state.team) if st.session_state.team in teams else 0),
     key="teams_team"
 )
 
@@ -79,7 +62,7 @@ if scope == "Per game":
     c4.metric("SCA (team)", int(game_df["SCA"].sum()) if "SCA" in game_df.columns else "—")
 
     # ---- Sorting & table ----
-    right = st.columns([2, 1])[1]
+    right = st.columns([2,1])[1]
     numeric_cols = game_df.select_dtypes(include="number").columns.tolist()
     sort_by = right.selectbox("Sort by", ["None"] + numeric_cols)
     ascending = right.checkbox("Ascending", value=False)
@@ -91,7 +74,7 @@ if scope == "Per game":
     with st.expander("Choose columns"):
         defaults = safe_cols(view_df, ["Player","Position","Minutes","Goals","Assists","GCA","SCA"])
         cols = st.multiselect("Columns", list(view_df.columns), default=defaults or list(view_df.columns))
-        if cols:
+        if cols: 
             view_df = view_df[cols]
 
     st.dataframe(view_df, use_container_width=True)
@@ -104,7 +87,7 @@ else:
     kpi_row(team_df, aggregate=True)
 
     # ---- Extra subheading KPIs (season/profile) ----
-    prof = team_profile_kpis(team_df)
+    prof = team_profile_kpis(team_df)  # pass raw per-game df for correct totals
     st.markdown("#### Team snapshot (season/selected dataset)")
     a1, a2, a3, a4 = st.columns(4)
     a1.metric("Avg Age (unique players)", f"{prof['avg_age']:.2f}" if pd.notna(prof["avg_age"]) else "—")
@@ -117,7 +100,7 @@ else:
     b2.metric("xA (total)", f"{prof['xa_total']:.2f}" if pd.notna(prof["xa_total"]) else "—")
 
     # ---- Sorting & table ----
-    right = st.columns([2, 1])[1]
+    right = st.columns([2,1])[1]
     num_cols = [c for c in agg_df.columns if c not in ["Player","Position"]]
     sort_by = right.selectbox("Sort by", ["None"] + num_cols)
     ascending = right.checkbox("Ascending", value=False, key=f"{team}_agg_asc")
@@ -129,7 +112,7 @@ else:
     with st.expander("Choose columns"):
         defaults = safe_cols(view_df, ["Player","Position","Minutes","Goals","Assists","GCA","SCA","xG","xA"])
         cols = st.multiselect("Columns", list(view_df.columns), default=defaults or list(view_df.columns), key=f"{team}_agg_cols")
-        if cols:
+        if cols: 
             view_df = view_df[cols]
 
     st.dataframe(view_df, use_container_width=True)
