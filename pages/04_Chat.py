@@ -14,12 +14,14 @@ inject_theme_css()
 st.title("Football Assistant — Chat")
 
 load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    st.error("❌ No OpenAI API key found. Set OPENAI_API_KEY in your .env.")
+
+OPENAI_API_KEY = (os.getenv("OPENAI_API_KEY") or "").strip()
+if not OPENAI_API_KEY or not OPENAI_API_KEY.startswith(("sk-", "sk-proj-")):
+    st.error("❌ OPENAI_API_KEY missing/invalid. Put a valid key in your .env.")
     st.stop()
 
 client = OpenAI(api_key=OPENAI_API_KEY, timeout=30.0, max_retries=3)
+
 
 def safe_chat_completion(**kwargs):
     try: 
