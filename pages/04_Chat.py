@@ -7,8 +7,10 @@ from openai import OpenAI
 from openai import APIConnectionError, RateLimitError, OpenAIError
 
 from lib.agent_tools import perform_action  # single executor
+from lib.data import inject_theme_css
 
 st.set_page_config(page_title="Football Assistant — Chat", page_icon="⚽", layout="wide")
+inject_theme_css()
 st.title("Football Assistant — Chat")
 
 load_dotenv()

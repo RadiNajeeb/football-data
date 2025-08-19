@@ -1,3 +1,7 @@
 import streamlit as st
-st.set_page_config(page_title="Football Data")
+from lib.data import inject_theme_css
+
+st.set_page_config(page_title="Football Data", layout="wide")
+inject_theme_css()
+
 st.title("Welcome to Football Data App ⚽")

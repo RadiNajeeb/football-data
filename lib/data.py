@@ -124,6 +124,101 @@ def kpi_row(team_df: pd.DataFrame, aggregate: bool) -> None:
 def safe_cols(df, wanted):
     return [c for c in wanted if c in df.columns]
 
+# ---------- UI helpers ----------
+def inject_theme_css():
+    """Inject global CSS for dark red theme and subtle animations."""
+    st.markdown(
+        """
+        <style>
+        :root {
+            --primary: #8B0000; /* dark red */
+            --bg: #1a0000; /* dark red background */
+            --bg-2: #260000; /* deeper dark red */
+            --text: #f5f5f5;
+            --accent: #5c0b0b; /* accent red */
+            --green: #0b5326; /* dark green for accents/buttons */
+        }
+        html, body, [data-testid="stAppViewContainer"] {
+            background-color: var(--bg);
+            color: var(--text);
+        }
+        [data-testid="stHeader"] { background: transparent; }
+        
+        /* Widen main container */
+        [data-testid="stAppViewContainer"] > .main {
+            max-width: 1680px;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+        
+        /* Inputs and buttons */
+        .stButton button, .stDownloadButton button {
+            background: linear-gradient(135deg, var(--primary), var(--green));
+            color: #ffffff;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 10px;
+            transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+        }
+        .stButton button:hover, .stDownloadButton button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(139,0,0,0.45), 0 2px 10px rgba(11,83,38,0.35);
+            filter: brightness(1.03);
+        }
+        
+        /* Selects, radios */
+        .stSelectbox, .stRadio, .stTextInput, .stNumberInput {
+            background-color: transparent;
+        }
+        
+        /* Dataframes */
+        [data-testid="stDataFrame"] div { color: var(--text); }
+        [data-testid="stDataFrame"] table { border: 1px solid rgba(255,255,255,0.08); }
+        
+        /* Metric cards */
+        div[data-testid="stMetric"] {
+            background: linear-gradient(135deg, rgba(139,0,0,0.30), rgba(11,83,38,0.28));
+            border: 1px solid rgba(139,0,0,0.45);
+            border-radius: 12px;
+            padding: 12px 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.35), 0 0 12px rgba(11,83,38,0.15);
+        }
+        div[data-testid="stMetric"] > label {
+            color: #f0eaea !important;
+            font-weight: 600;
+            white-space: normal;
+            line-height: 1.2;
+        }
+        div[data-testid="stMetric"] [data-testid="stMetricValue"] {
+            color: #ffffff !important;
+            /* Ensure values always fit: responsive size and wrapping */
+            font-size: clamp(16px, 2.2vw, 28px);
+            line-height: 1.1;
+            white-space: normal;
+            word-break: break-word;
+            overflow: visible;
+            text-overflow: unset;
+            max-width: 100%;
+            display: block;
+        }
+        
+        /* Section titles */
+        h1, h2, h3 { animation: fadeInUp 450ms ease-out both; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Emphasize subheaders */
+        .stMarkdown h4 { color: #ffd0d0; }
+        
+        /* Pulse small accents */
+        .pulse { animation: pulse 1.6s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
 # ---------- Game detection & labeling ----------
 def find_game_columns(df: pd.DataFrame) -> dict:
     def find(pattern):
